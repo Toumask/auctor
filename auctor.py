@@ -32,95 +32,96 @@ def get_pictures():
         ext = os.path.splitext(f)[1]
         if ext.lower() not in valid_images:
             continue
-        image_list.append(Image.open(os.path.join(filename, f)))
         image_path_list.append(filename + '/' + f)
     print(image_list[0])
     print(filename)
 
 
-# Tkinter Basic Setup
+# Tkinter Basic Setup ########################################
 root = Tk()
 root.title('Auctor')
+root.iconbitmap('logo.ico')
 root.geometry("1280x720")
+###############################################################
+
+# Frames ######################################################
+setting_up_frame = LabelFrame(root, text='Start here!', padx=5, pady=5)
+setting_up_frame.pack(anchor=W, fill=Y, expand=False, side=LEFT, padx=10, pady=10)
+
+picture_frame = LabelFrame(root, text='Pictures', padx=50, pady=50)
+picture_frame.pack(anchor=N, fill=BOTH, expand=True, side=LEFT, padx=10, pady=10)
+###############################################################
 
 # folder_path_picture_directory
 folder_path_picture_directory = StringVar()
-picture_directory_label = Label(root, textvariable=folder_path_picture_directory)
-picture_directory_label.grid(row=0, column=1)
-picture_directory_button = Button(text="Browse picture directory",
+picture_directory_label = Label(setting_up_frame, textvariable=folder_path_picture_directory)
+picture_directory_label.pack()
+picture_directory_button = Button(setting_up_frame, text="Browse picture directory",
                                   command=get_pictures)
-picture_directory_button.grid(row=0, column=3)
+picture_directory_button.pack()
 
 # directory_right browser
 directory_right = StringVar()
-directory_right_label = Label(root, textvariable=directory_right)
-directory_right_label.grid(row=1, column=1)
-directory_right_button = Button(text="Browse directory_right", command=get_directory_right)
-directory_right_button.grid(row=1, column=3)
+directory_right_label = Label(setting_up_frame, textvariable=directory_right)
+directory_right_label.pack()
+directory_right_button = Button(setting_up_frame, text="Browse directory_right", command=get_directory_right)
+directory_right_button.pack()
 
 # directory_left browser
 directory_left = StringVar()
-directory_left_label = Label(root, textvariable=directory_left)
-directory_left_label.grid(row=2, column=1)
-directory_left_button = Button(text="Browse directory_left", command=get_directory_left)
-directory_left_button.grid(row=2, column=3)
-
-image_number = 1
+directory_left_label = Label(setting_up_frame, textvariable=directory_left)
+directory_left_label.pack()
+directory_left_button = Button(setting_up_frame, text="Browse directory_left", command=get_directory_left)
+directory_left_button.pack()
 
 
 # show images
-def forward(number):
+def forward():
     global my_label
-    global image_number
-    number = image_number
-    my_label.grid_forget()
-    ph = ImageTk.PhotoImage(image_list[number - 1])
-    my_label = Label(image=ph)
+    my_label.pack_forget()
+    im = Image.open(image_path_list[0])
+    ph = ImageTk.PhotoImage(im)
+    my_label = Label(picture_frame, image=ph)
     my_label.image = ph
-    my_label.grid()
-    image_number = image_number + 1
+    my_label.pack()
 
 
 image_path_list = []
 image_list = []
-my_label = Label()
-my_label.grid()
+my_label = Label(picture_frame)
 
-start_button = Button(text="start Button", command=lambda: forward(image_number))
-start_button.grid(row=3, column=1)
+start_button = Button(picture_frame, text="start Button", command=forward)
+start_button.pack()
 
 
 # listen for button presses
 def leftKey(event):
-    global image_number
     file_to_move = image_path_list[0]
     shutil.move(file_to_move, directory_left.get())
     image_path_list.pop(0)
-    forward(image_number)
+    forward()
     print("Left key pressed")
 
 
 def rightKey(event):
-    global image_number
     file_to_move = image_path_list[0]
     shutil.move(file_to_move, directory_right.get())
     image_path_list.pop(0)
-    forward(image_number)
+    forward()
     print("Right key pressed")
 
 
 def skipKey(event):
-    global image_number
-    forward(image_number)
+    image_path_list.pop(0)
+    forward()
     print("skip key pressed")
 
 
 def deleteKey(event):
-    global image_number
-    file_to_delete = image_list[0]
+    file_to_delete = image_path_list[0]
     os.remove(file_to_delete)
-    image_list.pop(0)
-    forward(image_number)
+    image_path_list.pop(0)
+    forward()
     print("delete key pressed")
 
 
